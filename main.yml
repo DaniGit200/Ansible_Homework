@@ -1,0 +1,19 @@
+---
+- name: Homework
+  hosts: all
+  become: yes
+  vars:
+   directory_path_nfs: "/data/marketing/"
+   directory_context: "nfs_t"
+   directory_path: /directory
+   directory_context_httpd: httpd_sys_content_t
+   download: policycoreutils-python-utils
+   uuid: "25a1c2ac-2141-4faa-9b46-ae0f86311ddd"
+   mount_point: "/data/speci"
+   device: /dev/sdb
+   partition_size: 1GB
+  roles:
+    - apache
+    - directory
+    - nfs
+    - fstab

@@ -1,0 +1,39 @@
+---
+  - name: Download NFS
+    package: 
+      name: nfs-utils
+      state: present
+  - name: Create directory
+    file:
+      path: "{{ directory_path_nfs }}"
+      state: directory
+      mode: '0755'
+
+  - name: Modify httpd.conf User directive
+    lineinfile:
+      path: /etc/exports
+      line: "/data/marketing 10.0.2.10/24(ro)"
+      state: present
+
+  - name: NFS restart
+    service:
+      name: nfs-server
+      state: restarted
+    
+  - name: Set SELinux context
+    sefcontext:
+      target: '/data/marketing(/.*)?'
+      setype: "{{ directory_context }}"      
+    check_mode: no
+    become: yes
+    become_method: sudo
+
+  - name: Restore SELinux context
+    raw: restorecon -R /data/marketing/
+  
+  - name: Firewall
+    firewalld: 
+      port: 2049/tcp
+      permanent: true
+      state: enabled
+      immediate: yes

@@ -1,0 +1,45 @@
+---
+  - name: create vedett
+    user: 
+      name: "vedett"
+      password: vedett
+
+  - name: Install httpd package
+    yum:
+      name: httpd
+      state: present
+
+  - name: Modify httpd.conf User directive
+    lineinfile:
+      path: /etc/httpd/conf/httpd.conf
+      regexp: '^User'
+      line: 'User vedett'
+  - name: Modify httpd.conf Group directive
+    lineinfile:
+      path: /etc/httpd/conf/httpd.conf
+      regexp: '^Group'
+      line: 'Group vedett'
+    notify: httpd_conf changed
+
+  - name: Start httpd service
+    service:
+      name: httpd.service
+      state: started
+
+  - name: Enable httpd service at boot
+    service:
+      name: httpd.service
+      enabled: true
+
+  - name: Configure firewall for httpd
+    firewalld:
+      port: 80/tcp
+      permanent: true
+      state: enabled
+      immediate: yes
+
+  - name: Restart httpd service
+    service:
+      name: httpd
+      state: restarted
+

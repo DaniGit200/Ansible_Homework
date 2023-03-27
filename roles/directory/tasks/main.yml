@@ -1,0 +1,23 @@
+---
+  - name: Install policy core utils
+    package:
+      name: "{{download}}"
+      state: present
+
+  - name: Create directory
+    file:
+      path: "{{ directory_path }}"
+      state: directory
+      mode: '0755'
+      
+  - name: Set SELinux context
+    sefcontext:
+      target: "{{ directory_path }}"
+      setype: "{{ directory_context }}"
+    check_mode: no
+    become: yes
+    become_method: sudo
+
+  - name: Restore SELinux context
+    raw: restorecon {{directory_path}}
+
